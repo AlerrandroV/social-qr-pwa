@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social QR</title>
+  <meta name="description" content="Gere links e QR Codes para redes sociais" />
+  <meta name="theme-color" content="#6750A4" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <!-- Material Web -->
+  <script type="importmap">
+  {
+    "imports": {
+      "@material/web/": "https://esm.run/@material/web/"
+    }
+  }
+  </script>
+  <script type="module">
+    import '@material/web/all.js';
+  </script>
+
+  <!-- QR Code Styling -->
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- INSTALL SCREEN -->
+  <div id="install-screen" class="screen hidden">
+    <div class="install-hero">
+      <div class="install-icon">📲</div>
+      <h1>Social QR</h1>
+      <p class="install-subtitle">Gere links e QR Codes personalizados para todas as suas redes sociais.</p>
+    </div>
+    <div class="install-features">
+      <div class="feature-item">
+        <span class="feature-icon">🔗</span>
+        <div>
+          <strong>Links diretos</strong>
+          <p>WhatsApp, Telegram, Instagram, Facebook e mais</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">🎨</span>
+        <div>
+          <strong>QR Code estilizado</strong>
+          <p>Personalize cores, formas e logos</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">📤</span>
+        <div>
+          <strong>Compartilhamento nativo</strong>
+          <p>Aparece no menu de compartilhar do Android</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">📶</span>
+        <div>
+          <strong>Funciona offline</strong>
+          <p>Não precisa de internet para usar</p>
+        </div>
+      </div>
+    </div>
+    <div class="install-actions">
+      <md-filled-button id="install-btn">Instalar App</md-filled-button>
+      <p class="install-hint" id="install-hint">Toque no menu do navegador → "Adicionar à tela inicial"</p>
+    </div>
+  </div>
+
+  <!-- APP SCREEN -->
+  <div id="app-screen" class="screen hidden">
+
+    <!-- Top App Bar -->
+    <header class="top-bar">
+      <md-icon-button id="drawer-toggle">
+        <md-icon>menu</md-icon>
+      </md-icon-button>
+      <span class="top-bar-title" id="page-title">Social QR</span>
+      <md-icon-button id="theme-toggle">
+        <md-icon>dark_mode</md-icon>
+      </md-icon-button>
+    </header>
+
+    <!-- Navigation Drawer -->
+    <div id="drawer-overlay" class="drawer-overlay"></div>
+    <nav id="drawer" class="drawer">
+      <div class="drawer-header">
+        <div class="drawer-logo">📲</div>
+        <span>Social QR</span>
+      </div>
+      <md-list>
+        <md-list-item data-page="generator" class="nav-item active">
+          <md-icon slot="start">qr_code</md-icon>
+          Gerador
+        </md-list-item>
+        <md-list-item data-page="styler" class="nav-item">
+          <md-icon slot="start">palette</md-icon>
+          Estilizar QR
+        </md-list-item>
+        <md-list-item data-page="history" class="nav-item">
+          <md-icon slot="start">history</md-icon>
+          Histórico
+        </md-list-item>
+      </md-list>
+    </nav>
+
+    <!-- Pages -->
+    <main class="main-content">
+
+      <!-- PAGE: GENERATOR -->
+      <div id="page-generator" class="page active">
+        
+        <!-- Network Selector -->
+        <div class="network-scroll">
+          <button class="network-chip active" data-network="whatsapp">
+            <img src="icons/whatsapp.svg" alt="WhatsApp" />
+            WhatsApp
+          </button>
+          <button class="network-chip" data-network="telegram">
+            <img src="icons/telegram.svg" alt="Telegram" />
+            Telegram
+          </button>
+          <button class="network-chip" data-network="instagram">
+            <img src="icons/instagram.svg" alt="Instagram" />
+            Instagram
+          </button>
+          <button class="network-chip" data-network="facebook">
+            <img src="icons/facebook.svg" alt="Facebook" />
+            Facebook
+          </button>
+          <button class="network-chip" data-network="messenger">
+            <img src="icons/messenger.svg" alt="Messenger" />
+            Messenger
+          </button>
+          <button class="network-chip" data-network="x">
+            <img src="icons/x.svg" alt="X" />
+            X
+          </button>
+          <button class="network-chip" data-network="snapchat">
+            <img src="icons/snapchat.svg" alt="Snapchat" />
+            Snapchat
+          </button>
+        </div>
+
+        <!-- Dynamic Fields -->
+        <div class="card">
+          <div id="network-fields"></div>
+          <md-filled-button id="generate-btn" class="full-width">Gerar QR Code</md-filled-button>
+        </div>
+
+        <!-- Shared Text Banner -->
+        <div id="shared-banner" class="shared-banner hidden">
+          <md-icon>share</md-icon>
+          <span id="shared-text-preview"></span>
+          <md-icon-button id="clear-shared">
+            <md-icon>close</md-icon>
+          </md-icon-button>
+        </div>
+
+        <!-- QR Result -->
+        <div id="qr-result" class="card qr-result hidden">
+          <div id="qr-canvas-container"></div>
+          <div class="qr-link-box">
+            <span id="qr-link-text"></span>
+            <md-icon-button id="copy-link-btn">
+              <md-icon>content_copy</md-icon>
+            </md-icon-button>
+          </div>
+          <div class="qr-actions">
+            <md-filled-button id="open-link-btn">
+              <md-icon slot="icon">open_in_new</md-icon>
+              Abrir link
+            </md-filled-button>
+            <md-outlined-button id="export-btn">
+              <md-icon slot="icon">download</md-icon>
+              Exportar PNG
+            </md-outlined-button>
+            <md-outlined-button id="export-svg-btn">
+              <md-icon slot="icon">download</md-icon>
+              Exportar SVG
+            </md-outlined-button>
+            <md-outlined-button id="style-qr-btn">
+              <md-icon slot="icon">palette</md-icon>
+              Estilizar
+            </md-outlined-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: STYLER -->
+      <div id="page-styler" class="page">
+        <div class="card">
+          <h2 class="section-title">Estilo do QR Code</h2>
+
+          <div class="styler-preview" id="styler-preview"></div>
+
+          <!-- Dots Style -->
+          <label class="field-label">Estilo dos pontos</label>
+          <div class="chip-group" id="dots-style-group">
+            <button class="style-chip active" data-dots="square">Quadrado</button>
+            <button class="style-chip" data-dots="dots">Redondo</button>
+            <button class="style-chip" data-dots="rounded">Arredondado</button>
+            <button class="style-chip" data-dots="classy">Classy</button>
+            <button class="style-chip" data-dots="classy-rounded">Classy Round</button>
+            <button class="style-chip" data-dots="extra-rounded">Extra Round</button>
+          </div>
+
+          <!-- Corner Square -->
+          <label class="field-label">Cantos externos</label>
+          <div class="chip-group" id="corner-square-group">
+            <button class="style-chip active" data-corner-square="square">Quadrado</button>
+            <button class="style-chip" data-corner-square="dot">Ponto</button>
+            <button class="style-chip" data-corner-square="extra-rounded">Arredondado</button>
+          </div>
+
+          <!-- Corner Dot -->
+          <label class="field-label">Cantos internos</label>
+          <div class="chip-group" id="corner-dot-group">
+            <button class="style-chip active" data-corner-dot="square">Quadrado</button>
+            <button class="style-chip" data-corner-dot="dot">Ponto</button>
+          </div>
+
+          <!-- Colors -->
+          <label class="field-label">Cor dos pontos</label>
+          <div class="color-row">
+            <input type="color" id="dots-color" value="#6750A4" class="color-picker" />
+            <span>Sólido</span>
+            <label class="toggle-label">
+              <input type="checkbox" id="dots-gradient-toggle" /> Gradiente
+            </label>
+            <input type="color" id="dots-color2" value="#9C27B0" class="color-picker" />
+          </div>
+
+          <label class="field-label">Cor do fundo</label>
+          <div class="color-row">
+            <input type="color" id="bg-color" value="#FFFFFF" class="color-picker" />
+            <label class="toggle-label">
+              <input type="checkbox" id="transparent-bg" /> Transparente
+            </label>
+          </div>
+
+          <label class="field-label">Cor dos cantos</label>
+          <div class="color-row">
+            <input type="color" id="corner-color" value="#6750A4" class="color-picker" />
+          </div>
+
+          <!-- Logo -->
+          <label class="field-label">Logo central</label>
+          <div class="logo-row">
+            <div class="logo-chips" id="logo-presets">
+              <button class="style-chip active" data-logo="none">Nenhum</button>
+              <button class="style-chip" data-logo="whatsapp">WhatsApp</button>
+              <button class="style-chip" data-logo="telegram">Telegram</button>
+              <button class="style-chip" data-logo="instagram">Instagram</button>
+              <button class="style-chip" data-logo="facebook">Facebook</button>
+              <button class="style-chip" data-logo="x">X</button>
+            </div>
+            <label class="upload-btn">
+              <md-icon>upload</md-icon> Imagem própria
+              <input type="file" id="logo-upload" accept="image/*" hidden />
+            </label>
+          </div>
+
+          <!-- Logo Size -->
+          <label class="field-label">Tamanho do logo: <span id="logo-size-val">30</span>%</label>
+          <input type="range" id="logo-size" min="10" max="50" value="30" class="range-input" />
+
+          <!-- QR Size -->
+          <label class="field-label">Tamanho do QR: <span id="qr-size-val">300</span>px</label>
+          <input type="range" id="qr-size" min="200" max="1000" value="300" step="50" class="range-input" />
+
+          <!-- Margin -->
+          <label class="field-label">Margem: <span id="margin-val">10</span>px</label>
+          <input type="range" id="qr-margin" min="0" max="50" value="10" class="range-input" />
+
+          <div class="styler-actions">
+            <md-filled-button id="apply-style-btn">Aplicar estilo</md-filled-button>
+            <md-outlined-button id="reset-style-btn">Resetar</md-outlined-button>
+            <md-filled-tonal-button id="export-styled-btn">Exportar PNG HD</md-filled-tonal-button>
+            <md-filled-tonal-button id="export-styled-svg-btn">Exportar SVG</md-filled-tonal-button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE: HISTORY -->
+      <div id="page-history" class="page">
+        <div class="card">
+          <div class="history-header">
+            <h2 class="section-title">Histórico</h2>
+            <md-icon-button id="clear-history-btn">
+              <md-icon>delete_sweep</md-icon>
+            </md-icon-button>
+          </div>
+          <div id="history-list"></div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Snackbar -->
+    <div id="snackbar" class="snackbar"></div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
