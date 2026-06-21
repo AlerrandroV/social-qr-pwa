@@ -6,11 +6,17 @@
   <title>Social QR</title>
   <meta name="description" content="Gere links e QR Codes para redes sociais" />
   <meta name="theme-color" content="#6750A4" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Social QR" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
   <!-- Material Symbols Rounded -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
 
   <!-- Material Web -->
@@ -32,38 +38,50 @@
 </head>
 <body>
 
-  <!-- INSTALL SCREEN -->
+  <!-- ==================== INSTALL SCREEN ==================== -->
   <div id="install-screen" class="screen hidden">
+
+    <!-- Animated hero -->
     <div class="install-hero">
-      <div class="install-icon">
-        <span class="material-symbols-rounded">qr_code_scanner</span>
+      <div class="hero-bg">
+        <div class="hero-orb orb1"></div>
+        <div class="hero-orb orb2"></div>
+        <div class="hero-orb orb3"></div>
       </div>
-      <h1>Social QR</h1>
-      <p class="install-subtitle">Gere links e QR Codes personalizados para todas as suas redes sociais.</p>
+      <div class="install-icon-wrap">
+        <div class="install-icon-ring"></div>
+        <div class="install-icon">
+          <span class="material-symbols-rounded">qr_code_scanner</span>
+        </div>
+      </div>
+      <h1 class="hero-title">Social QR</h1>
+      <p class="install-subtitle">Gere links e QR Codes personalizados<br/>para todas as suas redes sociais.</p>
     </div>
+
+    <!-- Features -->
     <div class="install-features">
-      <div class="feature-item">
+      <div class="feature-item" style="--i:0">
         <span class="feature-icon material-symbols-rounded">link</span>
         <div>
           <strong>Links diretos</strong>
           <p>WhatsApp, Telegram, Instagram, Facebook e mais</p>
         </div>
       </div>
-      <div class="feature-item">
+      <div class="feature-item" style="--i:1">
         <span class="feature-icon material-symbols-rounded">palette</span>
         <div>
           <strong>QR Code estilizado</strong>
           <p>Personalize cores, formas e logos</p>
         </div>
       </div>
-      <div class="feature-item">
+      <div class="feature-item" style="--i:2">
         <span class="feature-icon material-symbols-rounded">share</span>
         <div>
           <strong>Compartilhamento nativo</strong>
           <p>Aparece no menu de compartilhar do Android</p>
         </div>
       </div>
-      <div class="feature-item">
+      <div class="feature-item" style="--i:3">
         <span class="feature-icon material-symbols-rounded">wifi_off</span>
         <div>
           <strong>Funciona offline</strong>
@@ -71,16 +89,24 @@
         </div>
       </div>
     </div>
-    <div class="install-actions">
-      <md-filled-button id="install-btn">
-        <span slot="icon" class="material-symbols-rounded">install_mobile</span>
-        Instalar App
-      </md-filled-button>
-      <p class="install-hint" id="install-hint">Toque no menu do navegador → "Adicionar à tela inicial"</p>
+
+    <!-- CTA -->
+    <div class="install-cta">
+      <button id="install-btn" class="install-cta-btn">
+        <span class="material-symbols-rounded">install_mobile</span>
+        <span>Instalar App Agora</span>
+        <span class="install-btn-arrow material-symbols-rounded">arrow_forward</span>
+      </button>
+      <p class="install-hint" id="install-hint">
+        <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">info</span>
+        Toque no menu do navegador → "Adicionar à tela inicial"
+      </p>
+      <p class="install-note">O app só funciona quando instalado</p>
     </div>
+
   </div>
 
-  <!-- APP SCREEN -->
+  <!-- ==================== APP SCREEN ==================== -->
   <div id="app-screen" class="screen hidden">
 
     <!-- Top App Bar -->
@@ -122,8 +148,6 @@
 
       <!-- PAGE: GENERATOR -->
       <div id="page-generator" class="page active">
-
-        <!-- Network Selector -->
         <div class="network-scroll">
           <button class="network-chip active" data-network="whatsapp">
             <img src="icons/whatsapp.svg" alt="WhatsApp" />
@@ -155,7 +179,6 @@
           </button>
         </div>
 
-        <!-- Dynamic Fields -->
         <div class="card">
           <div id="network-fields"></div>
           <md-filled-button id="generate-btn" class="full-width">
@@ -164,41 +187,31 @@
           </md-filled-button>
         </div>
 
-        <!-- Shared Text Banner -->
         <div id="shared-banner" class="shared-banner hidden">
           <span class="material-symbols-rounded">share</span>
           <span id="shared-text-preview"></span>
-          <md-icon-button id="clear-shared">
-            <md-icon>close</md-icon>
-          </md-icon-button>
+          <md-icon-button id="clear-shared"><md-icon>close</md-icon></md-icon-button>
         </div>
 
-        <!-- QR Result -->
         <div id="qr-result" class="card qr-result hidden">
           <div id="qr-canvas-container"></div>
           <div class="qr-link-box">
             <span class="material-symbols-rounded qr-link-icon">link</span>
             <span id="qr-link-text"></span>
-            <md-icon-button id="copy-link-btn">
-              <md-icon>content_copy</md-icon>
-            </md-icon-button>
+            <md-icon-button id="copy-link-btn"><md-icon>content_copy</md-icon></md-icon-button>
           </div>
           <div class="qr-actions">
             <md-filled-button id="open-link-btn">
-              <md-icon slot="icon">open_in_new</md-icon>
-              Abrir link
+              <md-icon slot="icon">open_in_new</md-icon>Abrir link
             </md-filled-button>
             <md-outlined-button id="export-btn">
-              <md-icon slot="icon">download</md-icon>
-              Exportar PNG
+              <md-icon slot="icon">download</md-icon>PNG
             </md-outlined-button>
             <md-outlined-button id="export-svg-btn">
-              <md-icon slot="icon">download</md-icon>
-              Exportar SVG
+              <md-icon slot="icon">download</md-icon>SVG
             </md-outlined-button>
             <md-outlined-button id="style-qr-btn">
-              <md-icon slot="icon">palette</md-icon>
-              Estilizar
+              <md-icon slot="icon">palette</md-icon>Estilizar
             </md-outlined-button>
           </div>
         </div>
@@ -208,12 +221,10 @@
       <div id="page-styler" class="page">
         <div class="card">
           <h2 class="section-title">Estilo do QR Code</h2>
-
           <div class="styler-preview" id="styler-preview"></div>
 
-          <!-- Dots Style -->
           <label class="field-label">Estilo dos pontos</label>
-          <div class="chip-group" id="dots-style-group">
+          <div class="chip-group">
             <button class="style-chip active" data-dots="square">Quadrado</button>
             <button class="style-chip" data-dots="dots">Redondo</button>
             <button class="style-chip" data-dots="rounded">Arredondado</button>
@@ -222,38 +233,31 @@
             <button class="style-chip" data-dots="extra-rounded">Extra Round</button>
           </div>
 
-          <!-- Corner Square -->
           <label class="field-label">Cantos externos</label>
-          <div class="chip-group" id="corner-square-group">
+          <div class="chip-group">
             <button class="style-chip active" data-corner-square="square">Quadrado</button>
             <button class="style-chip" data-corner-square="dot">Ponto</button>
             <button class="style-chip" data-corner-square="extra-rounded">Arredondado</button>
           </div>
 
-          <!-- Corner Dot -->
           <label class="field-label">Cantos internos</label>
-          <div class="chip-group" id="corner-dot-group">
+          <div class="chip-group">
             <button class="style-chip active" data-corner-dot="square">Quadrado</button>
             <button class="style-chip" data-corner-dot="dot">Ponto</button>
           </div>
 
-          <!-- Colors -->
           <label class="field-label">Cor dos pontos</label>
           <div class="color-row">
             <input type="color" id="dots-color" value="#6750A4" class="color-picker" />
             <span>Sólido</span>
-            <label class="toggle-label">
-              <input type="checkbox" id="dots-gradient-toggle" /> Gradiente
-            </label>
+            <label class="toggle-label"><input type="checkbox" id="dots-gradient-toggle" /> Gradiente</label>
             <input type="color" id="dots-color2" value="#9C27B0" class="color-picker" />
           </div>
 
           <label class="field-label">Cor do fundo</label>
           <div class="color-row">
             <input type="color" id="bg-color" value="#FFFFFF" class="color-picker" />
-            <label class="toggle-label">
-              <input type="checkbox" id="transparent-bg" /> Transparente
-            </label>
+            <label class="toggle-label"><input type="checkbox" id="transparent-bg" /> Transparente</label>
           </div>
 
           <label class="field-label">Cor dos cantos</label>
@@ -261,7 +265,6 @@
             <input type="color" id="corner-color" value="#6750A4" class="color-picker" />
           </div>
 
-          <!-- Logo -->
           <label class="field-label">Logo central</label>
           <div class="logo-row">
             <div class="logo-chips" id="logo-presets">
@@ -278,34 +281,27 @@
             </label>
           </div>
 
-          <!-- Logo Size -->
           <label class="field-label">Tamanho do logo: <span id="logo-size-val">30</span>%</label>
           <input type="range" id="logo-size" min="10" max="50" value="30" class="range-input" />
 
-          <!-- QR Size -->
           <label class="field-label">Tamanho do QR: <span id="qr-size-val">300</span>px</label>
           <input type="range" id="qr-size" min="200" max="1000" value="300" step="50" class="range-input" />
 
-          <!-- Margin -->
           <label class="field-label">Margem: <span id="margin-val">10</span>px</label>
           <input type="range" id="qr-margin" min="0" max="50" value="10" class="range-input" />
 
           <div class="styler-actions">
             <md-filled-button id="apply-style-btn">
-              <span slot="icon" class="material-symbols-rounded">check_circle</span>
-              Aplicar estilo
+              <span slot="icon" class="material-symbols-rounded">check_circle</span>Aplicar estilo
             </md-filled-button>
             <md-outlined-button id="reset-style-btn">
-              <span slot="icon" class="material-symbols-rounded">restart_alt</span>
-              Resetar
+              <span slot="icon" class="material-symbols-rounded">restart_alt</span>Resetar
             </md-outlined-button>
             <md-filled-tonal-button id="export-styled-btn">
-              <span slot="icon" class="material-symbols-rounded">image</span>
-              Exportar PNG HD
+              <span slot="icon" class="material-symbols-rounded">image</span>Exportar PNG HD
             </md-filled-tonal-button>
             <md-filled-tonal-button id="export-styled-svg-btn">
-              <span slot="icon" class="material-symbols-rounded">draw</span>
-              Exportar SVG
+              <span slot="icon" class="material-symbols-rounded">draw</span>Exportar SVG
             </md-filled-tonal-button>
           </div>
         </div>
@@ -316,19 +312,14 @@
         <div class="card">
           <div class="history-header">
             <h2 class="section-title">Histórico</h2>
-            <md-icon-button id="clear-history-btn">
-              <md-icon>delete_sweep</md-icon>
-            </md-icon-button>
+            <md-icon-button id="clear-history-btn"><md-icon>delete_sweep</md-icon></md-icon-button>
           </div>
           <div id="history-list"></div>
         </div>
       </div>
 
     </main>
-
-    <!-- Snackbar -->
     <div id="snackbar" class="snackbar"></div>
-
   </div>
 
   <script src="app.js"></script>

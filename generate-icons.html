@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+<canvas id="c192" width="192" height="192"></canvas>
+<canvas id="c512" width="512" height="512"></canvas>
+<script>
+function drawIcon(canvas) {
+  const ctx = canvas.getContext('2d');
+  const s = canvas.width;
+  // Background gradient
+  const grad = ctx.createLinearGradient(0, 0, s, s);
+  grad.addColorStop(0, '#6750A4');
+  grad.addColorStop(1, '#9C27B0');
+  ctx.fillStyle = grad;
+  // Rounded rect
+  const r = s * 0.22;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(s - r, 0);
+  ctx.quadraticCurveTo(s, 0, s, r);
+  ctx.lineTo(s, s - r);
+  ctx.quadraticCurveTo(s, s, s - r, s);
+  ctx.lineTo(r, s);
+  ctx.quadraticCurveTo(0, s, 0, s - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.fill();
+  // QR code icon
+  ctx.fillStyle = '#fff';
+  const u = s / 8;
+  const off = u;
+  // Top-left square
+  ctx.fillRect(off, off, u*2.5, u*2.5);
+  ctx.fillStyle = grad;
+  ctx.fillRect(off+u*0.5, off+u*0.5, u*1.5, u*1.5);
+  ctx.fillStyle = '#fff';
+  // Top-right square
+  ctx.fillRect(s-off-u*2.5, off, u*2.5, u*2.5);
+  ctx.fillStyle = grad;
+  ctx.fillRect(s-off-u*2, off+u*0.5, u*1.5, u*1.5);
+  ctx.fillStyle = '#fff';
+  // Bottom-left square
+  ctx.fillRect(off, s-off-u*2.5, u*2.5, u*2.5);
+  ctx.fillStyle = grad;
+  ctx.fillRect(off+u*0.5, s-off-u*2, u*1.5, u*1.5);
+  ctx.fillStyle = '#fff';
+  // Data dots
+  const dots = [
+    [3.5,3.5],[4.5,3.5],[3.5,4.5],
+    [5,5],[6,5],[5,6],[6,6],
+    [4.5,5],[4.5,6]
+  ];
+  dots.forEach(([x,y])=>{
+    ctx.beginPath();
+    ctx.arc(x*u, y*u, u*0.35, 0, Math.PI*2);
+    ctx.fill();
+  });
+}
+drawIcon(document.getElementById('c192'));
+drawIcon(document.getElementById('c512'));
+document.getElementById('c192').toBlob(b=>{
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='icon-192.png';a.click();
+});
+setTimeout(()=>{
+  document.getElementById('c512').toBlob(b=>{
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='icon-512.png';a.click();
+  });
+},500);
+</script>
+</body>
+</html>
