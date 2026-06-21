@@ -2,7 +2,6 @@
 // Social QR PWA — app.js
 // ============================================================
 
-// ---------- Service Worker Registration ----------
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(console.error);
 }
@@ -37,7 +36,7 @@ const state = {
 const networks = {
   whatsapp: {
     label: 'WhatsApp',
-    emoji: '💬',
+    icon: 'chat',
     color: '#25D366',
     fields: [
       { id: 'phone', label: 'Número (com DDI, ex: 5511999999999)', type: 'tel', placeholder: '5511999999999' },
@@ -50,7 +49,7 @@ const networks = {
   },
   telegram: {
     label: 'Telegram',
-    emoji: '✈️',
+    icon: 'send',
     color: '#0088CC',
     fields: [
       { id: 'username', label: 'Username (sem @)', type: 'text', placeholder: 'seuusername' },
@@ -63,7 +62,7 @@ const networks = {
   },
   instagram: {
     label: 'Instagram',
-    emoji: '📸',
+    icon: 'photo_camera',
     color: '#E1306C',
     fields: [
       { id: 'username', label: 'Username (sem @)', type: 'text', placeholder: 'seuusername' },
@@ -72,7 +71,7 @@ const networks = {
   },
   facebook: {
     label: 'Facebook',
-    emoji: '👍',
+    icon: 'thumb_up',
     color: '#1877F2',
     fields: [
       { id: 'profile', label: 'Perfil ou Page ID / username', type: 'text', placeholder: 'seuperfil' },
@@ -81,7 +80,7 @@ const networks = {
   },
   messenger: {
     label: 'Messenger',
-    emoji: '💙',
+    icon: 'forum',
     color: '#0084FF',
     fields: [
       { id: 'profile', label: 'Username do Facebook', type: 'text', placeholder: 'seuperfil' },
@@ -94,7 +93,7 @@ const networks = {
   },
   x: {
     label: 'X (Twitter)',
-    emoji: '🐦',
+    icon: 'tag',
     color: '#000000',
     fields: [
       { id: 'username', label: 'Username (sem @)', type: 'text', placeholder: 'seuusername' },
@@ -107,7 +106,7 @@ const networks = {
   },
   snapchat: {
     label: 'Snapchat',
-    emoji: '👻',
+    icon: 'ghost',
     color: '#FFFC00',
     fields: [
       { id: 'username', label: 'Username', type: 'text', placeholder: 'seuusername' },
@@ -116,7 +115,7 @@ const networks = {
   },
 };
 
-// ---------- Logo SVGs embutidos ----------
+// ---------- Logo paths ----------
 const logoDataURLs = {};
 const logoPaths = {
   whatsapp: 'icons/whatsapp.svg',
@@ -195,7 +194,6 @@ function initTheme() {
   const saved = localStorage.getItem('theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
   updateThemeIcon(saved);
-
   document.getElementById('theme-toggle').addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme');
     const next = current === 'dark' ? 'light' : 'dark';
@@ -215,7 +213,6 @@ function initDrawer() {
   const drawer = document.getElementById('drawer');
   const overlay = document.getElementById('drawer-overlay');
   const toggle = document.getElementById('drawer-toggle');
-
   toggle.addEventListener('click', () => { drawer.classList.add('open'); overlay.classList.add('open'); });
   overlay.addEventListener('click', () => { drawer.classList.remove('open'); overlay.classList.remove('open'); });
 }
@@ -259,7 +256,12 @@ function initNetworkChips() {
 function renderNetworkFields() {
   const container = document.getElementById('network-fields');
   const net = networks[state.network];
-  container.innerHTML = `<label class="field-label">${net.emoji} ${net.label}</label><div class="fields-grid" id="fields-inner"></div>`;
+  container.innerHTML = `
+    <div class="network-label">
+      <span class="material-symbols-rounded" style="color:${net.color}">${net.icon}</span>
+      <span class="field-label">${net.label}</span>
+    </div>
+    <div class="fields-grid" id="fields-inner"></div>`;
   const grid = document.getElementById('fields-inner');
   net.fields.forEach(f => {
     if (f.type === 'textarea') {
@@ -288,20 +290,15 @@ function renderNetworkFields() {
 // ---------- Generate QR ----------
 function initGenerateBtn() {
   document.getElementById('generate-btn').addEventListener('click', generateQR);
-
   document.getElementById('copy-link-btn').addEventListener('click', () => {
     navigator.clipboard.writeText(state.generatedLink).then(() => showSnackbar('Link copiado!'));
   });
-
   document.getElementById('open-link-btn').addEventListener('click', () => {
     window.open(state.generatedLink, '_blank');
   });
-
   document.getElementById('export-btn').addEventListener('click', () => exportQR('png'));
   document.getElementById('export-svg-btn').addEventListener('click', () => exportQR('svg'));
-
   document.getElementById('style-qr-btn').addEventListener('click', () => navigateTo('styler'));
-
   document.getElementById('clear-shared').addEventListener('click', () => {
     state.sharedText = '';
     document.getElementById('shared-banner').classList.add('hidden');
@@ -322,54 +319,20 @@ function generateQR() {
   const fields = getFieldValues();
   const net = networks[state.network];
   const link = net.buildLink(fields, state.sharedText);
-
   if (!link || link.includes('undefined') || link.endsWith('/')) {
     showSnackbar('Preencha os campos obrigatórios');
     return;
   }
-
   state.generatedLink = link;
   document.getElementById('qr-link-text').textContent = link;
   document.getElementById('qr-result').classList.remove('hidden');
-
   const container = document.getElementById('qr-canvas-container');
   container.innerHTML = '';
-
-  state.qrInstance = buildQRInstance(link, state.style.qrSize);
-  state.qrInstance.append(container);
-
-  saveHistory(net.label, link, net.emoji);
-}
-
-async function buildQRInstance(data, size) {
-  const s = state.style;
-  const opts = {
-    width: size,
-    height: size,
-    data,
-    margin: s.margin,
-    dotsOptions: {
-      type: s.dotsType,
-      color: s.dotsGradient ? undefined : s.dotsColor,
-      gradient: s.dotsGradient ? {
-        type: 'linear',
-        rotation: 45,
-        colorStops: [
-          { offset: 0, color: s.dotsColor },
-          { offset: 1, color: s.dotsColor2 },
-        ]
-      } : undefined,
-    },
-    backgroundOptions: {
-      color: s.transparentBg ? 'transparent' : s.bgColor,
-    },
-    cornersSquareOptions: { type: s.cornerSquareType, color: s.cornerColor },
-    cornersDotOptions: { type: s.cornerDotType, color: s.cornerColor },
-    image: s.logoKey !== 'none' ? (s.logoUrl || null) : null,
-    imageOptions: { crossOrigin: 'anonymous', margin: 4, imageSize: s.logoSize },
-  };
-  const qr = new QRCodeStyling(opts);
-  return qr;
+  generateQRInstance(link, state.style.qrSize).then(qr => {
+    state.qrInstance = qr;
+    qr.append(container);
+  });
+  saveHistory(net.label, link, net.icon);
 }
 
 async function generateQRInstance(data, size) {
@@ -378,10 +341,8 @@ async function generateQRInstance(data, size) {
   if (s.logoKey !== 'none') {
     imageUrl = s.logoUrl || (logoPaths[s.logoKey] ? await loadLogoDataURL(s.logoKey) : null);
   }
-  const opts = {
-    width: size,
-    height: size,
-    data,
+  return new QRCodeStyling({
+    width: size, height: size, data,
     margin: s.margin,
     dotsOptions: {
       type: s.dotsType,
@@ -396,11 +357,9 @@ async function generateQRInstance(data, size) {
     cornersDotOptions: { type: s.cornerDotType, color: s.cornerColor },
     image: imageUrl,
     imageOptions: { crossOrigin: 'anonymous', margin: 4, imageSize: s.logoSize },
-  };
-  return new QRCodeStyling(opts);
+  });
 }
 
-// ---------- Export ----------
 function exportQR(ext) {
   if (!state.qrInstance) { showSnackbar('Gere um QR Code primeiro'); return; }
   state.qrInstance.download({ name: 'social-qr', extension: ext });
@@ -408,7 +367,6 @@ function exportQR(ext) {
 
 // ---------- Styler Page ----------
 function initStylerPage() {
-  // Dots
   document.querySelectorAll('[data-dots]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-dots]').forEach(b => b.classList.remove('active'));
@@ -417,8 +375,6 @@ function initStylerPage() {
       refreshStylerPreview();
     });
   });
-
-  // Corner Square
   document.querySelectorAll('[data-corner-square]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-corner-square]').forEach(b => b.classList.remove('active'));
@@ -427,8 +383,6 @@ function initStylerPage() {
       refreshStylerPreview();
     });
   });
-
-  // Corner Dot
   document.querySelectorAll('[data-corner-dot]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-corner-dot]').forEach(b => b.classList.remove('active'));
@@ -437,16 +391,12 @@ function initStylerPage() {
       refreshStylerPreview();
     });
   });
-
-  // Colors
   document.getElementById('dots-color').addEventListener('input', e => { state.style.dotsColor = e.target.value; refreshStylerPreview(); });
   document.getElementById('dots-color2').addEventListener('input', e => { state.style.dotsColor2 = e.target.value; refreshStylerPreview(); });
   document.getElementById('dots-gradient-toggle').addEventListener('change', e => { state.style.dotsGradient = e.target.checked; refreshStylerPreview(); });
   document.getElementById('bg-color').addEventListener('input', e => { state.style.bgColor = e.target.value; refreshStylerPreview(); });
   document.getElementById('transparent-bg').addEventListener('change', e => { state.style.transparentBg = e.target.checked; refreshStylerPreview(); });
   document.getElementById('corner-color').addEventListener('input', e => { state.style.cornerColor = e.target.value; refreshStylerPreview(); });
-
-  // Logo presets
   document.querySelectorAll('[data-logo]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-logo]').forEach(b => b.classList.remove('active'));
@@ -456,8 +406,6 @@ function initStylerPage() {
       refreshStylerPreview();
     });
   });
-
-  // Logo upload
   document.getElementById('logo-upload').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -470,8 +418,6 @@ function initStylerPage() {
     };
     reader.readAsDataURL(file);
   });
-
-  // Ranges
   document.getElementById('logo-size').addEventListener('input', e => {
     state.style.logoSize = parseInt(e.target.value) / 100;
     document.getElementById('logo-size-val').textContent = e.target.value;
@@ -487,8 +433,6 @@ function initStylerPage() {
     document.getElementById('margin-val').textContent = e.target.value;
     refreshStylerPreview();
   });
-
-  // Actions
   document.getElementById('apply-style-btn').addEventListener('click', () => {
     if (state.generatedLink) generateQR();
     showSnackbar('Estilo aplicado!');
@@ -540,8 +484,8 @@ function exportStyledSVG() {
 }
 
 // ---------- History ----------
-function saveHistory(network, link, emoji) {
-  const entry = { network, link, emoji, date: new Date().toLocaleString('pt-BR') };
+function saveHistory(network, link, icon) {
+  const entry = { network, link, icon, date: new Date().toLocaleString('pt-BR') };
   state.history.unshift(entry);
   if (state.history.length > 50) state.history.pop();
   localStorage.setItem('qr_history', JSON.stringify(state.history));
@@ -550,17 +494,22 @@ function saveHistory(network, link, emoji) {
 function renderHistory() {
   const list = document.getElementById('history-list');
   if (!state.history.length) {
-    list.innerHTML = '<div class="history-empty">Nenhum QR Code gerado ainda.</div>';
+    list.innerHTML = `
+      <div class="history-empty">
+        <span class="material-symbols-rounded" style="font-size:48px;opacity:0.3">history</span>
+        <p>Nenhum QR Code gerado ainda.</p>
+      </div>`;
     return;
   }
   list.innerHTML = state.history.map((h, i) => `
     <div class="history-item" data-index="${i}">
-      <span class="history-item-icon">${h.emoji}</span>
+      <span class="history-item-icon material-symbols-rounded">${h.icon}</span>
       <div class="history-item-info">
         <strong>${h.network}</strong>
         <span>${h.link}</span>
         <span style="font-size:11px;opacity:0.6">${h.date}</span>
       </div>
+      <span class="material-symbols-rounded history-copy-icon">content_copy</span>
     </div>
   `).join('');
   list.querySelectorAll('.history-item').forEach(el => {
@@ -586,7 +535,6 @@ function handleSharedData() {
     document.getElementById('shared-text-preview').textContent = text.slice(0, 60) + (text.length > 60 ? '...' : '');
     document.getElementById('shared-banner').classList.remove('hidden');
     renderNetworkFields();
-    // Clean URL
     history.replaceState({}, '', window.location.pathname);
   }
 }

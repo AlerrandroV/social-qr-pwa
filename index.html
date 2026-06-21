@@ -10,6 +10,9 @@
   <link rel="icon" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
+  <!-- Material Symbols Rounded -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+
   <!-- Material Web -->
   <script type="importmap">
   {
@@ -32,34 +35,36 @@
   <!-- INSTALL SCREEN -->
   <div id="install-screen" class="screen hidden">
     <div class="install-hero">
-      <div class="install-icon">📲</div>
+      <div class="install-icon">
+        <span class="material-symbols-rounded">qr_code_scanner</span>
+      </div>
       <h1>Social QR</h1>
       <p class="install-subtitle">Gere links e QR Codes personalizados para todas as suas redes sociais.</p>
     </div>
     <div class="install-features">
       <div class="feature-item">
-        <span class="feature-icon">🔗</span>
+        <span class="feature-icon material-symbols-rounded">link</span>
         <div>
           <strong>Links diretos</strong>
           <p>WhatsApp, Telegram, Instagram, Facebook e mais</p>
         </div>
       </div>
       <div class="feature-item">
-        <span class="feature-icon">🎨</span>
+        <span class="feature-icon material-symbols-rounded">palette</span>
         <div>
           <strong>QR Code estilizado</strong>
           <p>Personalize cores, formas e logos</p>
         </div>
       </div>
       <div class="feature-item">
-        <span class="feature-icon">📤</span>
+        <span class="feature-icon material-symbols-rounded">share</span>
         <div>
           <strong>Compartilhamento nativo</strong>
           <p>Aparece no menu de compartilhar do Android</p>
         </div>
       </div>
       <div class="feature-item">
-        <span class="feature-icon">📶</span>
+        <span class="feature-icon material-symbols-rounded">wifi_off</span>
         <div>
           <strong>Funciona offline</strong>
           <p>Não precisa de internet para usar</p>
@@ -67,7 +72,10 @@
       </div>
     </div>
     <div class="install-actions">
-      <md-filled-button id="install-btn">Instalar App</md-filled-button>
+      <md-filled-button id="install-btn">
+        <span slot="icon" class="material-symbols-rounded">install_mobile</span>
+        Instalar App
+      </md-filled-button>
       <p class="install-hint" id="install-hint">Toque no menu do navegador → "Adicionar à tela inicial"</p>
     </div>
   </div>
@@ -90,7 +98,7 @@
     <div id="drawer-overlay" class="drawer-overlay"></div>
     <nav id="drawer" class="drawer">
       <div class="drawer-header">
-        <div class="drawer-logo">📲</div>
+        <span class="drawer-logo material-symbols-rounded">qr_code_2</span>
         <span>Social QR</span>
       </div>
       <md-list>
@@ -114,7 +122,7 @@
 
       <!-- PAGE: GENERATOR -->
       <div id="page-generator" class="page active">
-        
+
         <!-- Network Selector -->
         <div class="network-scroll">
           <button class="network-chip active" data-network="whatsapp">
@@ -150,12 +158,15 @@
         <!-- Dynamic Fields -->
         <div class="card">
           <div id="network-fields"></div>
-          <md-filled-button id="generate-btn" class="full-width">Gerar QR Code</md-filled-button>
+          <md-filled-button id="generate-btn" class="full-width">
+            <span slot="icon" class="material-symbols-rounded">qr_code</span>
+            Gerar QR Code
+          </md-filled-button>
         </div>
 
         <!-- Shared Text Banner -->
         <div id="shared-banner" class="shared-banner hidden">
-          <md-icon>share</md-icon>
+          <span class="material-symbols-rounded">share</span>
           <span id="shared-text-preview"></span>
           <md-icon-button id="clear-shared">
             <md-icon>close</md-icon>
@@ -166,6 +177,7 @@
         <div id="qr-result" class="card qr-result hidden">
           <div id="qr-canvas-container"></div>
           <div class="qr-link-box">
+            <span class="material-symbols-rounded qr-link-icon">link</span>
             <span id="qr-link-text"></span>
             <md-icon-button id="copy-link-btn">
               <md-icon>content_copy</md-icon>
@@ -261,7 +273,7 @@
               <button class="style-chip" data-logo="x">X</button>
             </div>
             <label class="upload-btn">
-              <md-icon>upload</md-icon> Imagem própria
+              <span class="material-symbols-rounded">upload</span> Imagem própria
               <input type="file" id="logo-upload" accept="image/*" hidden />
             </label>
           </div>
@@ -279,10 +291,22 @@
           <input type="range" id="qr-margin" min="0" max="50" value="10" class="range-input" />
 
           <div class="styler-actions">
-            <md-filled-button id="apply-style-btn">Aplicar estilo</md-filled-button>
-            <md-outlined-button id="reset-style-btn">Resetar</md-outlined-button>
-            <md-filled-tonal-button id="export-styled-btn">Exportar PNG HD</md-filled-tonal-button>
-            <md-filled-tonal-button id="export-styled-svg-btn">Exportar SVG</md-filled-tonal-button>
+            <md-filled-button id="apply-style-btn">
+              <span slot="icon" class="material-symbols-rounded">check_circle</span>
+              Aplicar estilo
+            </md-filled-button>
+            <md-outlined-button id="reset-style-btn">
+              <span slot="icon" class="material-symbols-rounded">restart_alt</span>
+              Resetar
+            </md-outlined-button>
+            <md-filled-tonal-button id="export-styled-btn">
+              <span slot="icon" class="material-symbols-rounded">image</span>
+              Exportar PNG HD
+            </md-filled-tonal-button>
+            <md-filled-tonal-button id="export-styled-svg-btn">
+              <span slot="icon" class="material-symbols-rounded">draw</span>
+              Exportar SVG
+            </md-filled-tonal-button>
           </div>
         </div>
       </div>
